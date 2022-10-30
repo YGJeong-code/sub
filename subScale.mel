@@ -1,0 +1,26 @@
+setAttr "FKIKSpline_M.FKIKBlend" 10;
+setAttr "FKIKParentConstraintSpline_M.visibility" 0;
+
+addAttr -ln "arm"  -at "enum" -en "off:old:new:"  FKBody_M;
+setAttr -e-keyable true FKBody_M.arm;
+addAttr -ln "sampler"  -at "enum" -en "off:on:"  FKBody_M;
+setAttr -e-keyable true FKBody_M.sampler;
+
+connectAttr -f FKBody_M.sampler subOldHand_sampler_Grp.visibility;
+
+shadingNode -asUtility condition;
+connectAttr -f FKBody_M.arm condition1.firstTerm;
+setAttr "condition1.secondTerm" 1;
+setAttr "condition1.colorIfTrueR" 1;
+setAttr "condition1.colorIfFalseR" 0;
+connectAttr -f condition1.outColorR subOldHand_oldarm_Grp.visibility;
+
+shadingNode -asUtility condition;
+connectAttr -f FKBody_M.arm condition2.firstTerm;
+setAttr "condition2.secondTerm" 2;
+setAttr "condition2.colorIfTrueR" 1;
+setAttr "condition2.colorIfFalseR" 0;
+connectAttr -f condition2.outColorR robotHand_geo_Grp.visibility;
+
+setAttr "FKBody_M.arm" 1;
+setAttr "FKBody_M.sampler" 1;
