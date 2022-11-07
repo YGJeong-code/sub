@@ -21,24 +21,19 @@ def skinAgrp():
     for i in myMesh:
         cmds.skinCluster('Root_M', i,tsb=True)
 
-    # myMeshShape = cmds.listRelatives('robotHand_A_c_Grp', c=True, ad=True, type='geometryShape')
-    # myMesh = cmds.listRelatives(myMeshShape, p=True)
-    # for i in myMesh:
-    #     cmds.skinCluster('Add_Root_M','Add_Rubber_M','Add_Rubber1_M','Add_Rubber2_M','Add_Rubber3_M', i, tsb=True)
+    myMesh = 'robotHand_A_c_a_rubber_geo'
+    mySkin = cmds.skinCluster('Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
 
-    # myMesh = 'robotHand_A_c_a_rubber_geo'
-    # mySkin = cmds.skinCluster('Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
-    #
-    # myMesh = 'robotHand_A_c_b_rubber_geo'
-    # mySkin = cmds.skinCluster('Add_Rubber1_M','Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
-    # cmds.deformerWeights('rubberB.xml', im=True, deformer=mySkin, path=myPath)
-    #
-    # myMesh = 'robotHand_A_c_c_rubber_geo'
-    # mySkin = cmds.skinCluster('Add_Root_M','Add_Rubber_M','Add_Rubber1_M','Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
-    # cmds.deformerWeights('rubberC.xml', im=True, deformer=mySkin, path=myPath)
-    #
-    # myMesh = 'robotHand_A_c_d_metal_geo'
-    # mySkin = cmds.skinCluster('Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
+    myMesh = 'robotHand_A_c_b_rubber_geo'
+    mySkin = cmds.skinCluster('Add_Rubber1_M','Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
+    cmds.deformerWeights('rubberB.xml', im=True, deformer=mySkin, path=myPath)
+
+    myMesh = 'robotHand_A_c_c_rubber_geo'
+    mySkin = cmds.skinCluster('Add_Root_M','Add_Rubber_M','Add_Rubber1_M','Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
+    cmds.deformerWeights('rubberC.xml', im=True, deformer=mySkin, path=myPath)
+
+    myMesh = 'robotHand_A_c_d_metal_geo'
+    mySkin = cmds.skinCluster('Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
 
 # robotHand_B_Grp
 def skinBgrp():

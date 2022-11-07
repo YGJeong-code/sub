@@ -5,26 +5,26 @@ from piston.piston import makePiston
 # IK
 def ikSetup():
     # rubber
-    # myList = ['.fkVis','.ikVis','.fkIkVis','.aimVis','.aimFKVis','.aimLRVis','.fingerVis','.bendVis','.arrowVis','.drvSysVis','.jointVis']
-    # if bool( cmds.objExists('Main') ):
-    #     cmds.parentConstraint ('Main','Add_Main', mo=True)
-    #     cmds.scaleConstraint ('Main','Add_Main', mo=True)
-    #     for i in myList:
-    #         cmds.connectAttr ( 'Main'+i, 'Add_Main'+i, f=True)
-    # else:
-    #     cmds.parentConstraint ('World','Add_Main', mo=True)
-    #     cmds.scaleConstraint ('World','Add_Main', mo=True)
-    #     for i in myList:
-    #         cmds.connectAttr ( 'World'+i, 'Add_Main'+i, f=True)
-    #
-    # if bool( cmds.objExists('FKRoot_M') ):
-    #     cmds.parentConstraint ('FKRoot_M','Add_FKRoot_M', mo=True)
-    #     cmds.scaleConstraint ('FKRoot_M','Add_FKRoot_M', mo=True)
-    # else:
-    #     cmds.parentConstraint ('FKExtraRoot_M|Root','Add_FKRoot_M', mo=True)
-    #     cmds.scaleConstraint ('FKExtraRoot_M|Root','Add_FKRoot_M', mo=True)
-    #
-    # cmds.setAttr ("Add_IKSpline3_M.stretchy", 0)
+    myList = ['.fkVis','.ikVis','.fkIkVis','.aimVis','.aimFKVis','.aimLRVis','.fingerVis','.bendVis','.arrowVis','.drvSysVis','.jointVis']
+    if bool( cmds.objExists('Main') ):
+        cmds.parentConstraint ('Main','Add_Main', mo=True)
+        cmds.scaleConstraint ('Main','Add_Main', mo=True)
+        for i in myList:
+            cmds.connectAttr ( 'Main'+i, 'Add_Main'+i, f=True)
+    else:
+        cmds.parentConstraint ('World','Add_Main', mo=True)
+        cmds.scaleConstraint ('World','Add_Main', mo=True)
+        for i in myList:
+            cmds.connectAttr ( 'World'+i, 'Add_Main'+i, f=True)
+
+    if bool( cmds.objExists('FKRoot_M') ):
+        cmds.parentConstraint ('FKRoot_M','Add_FKRoot_M', mo=True)
+        cmds.scaleConstraint ('FKRoot_M','Add_FKRoot_M', mo=True)
+    else:
+        cmds.parentConstraint ('FKExtraRoot_M|Root','Add_FKRoot_M', mo=True)
+        cmds.scaleConstraint ('FKExtraRoot_M|Root','Add_FKRoot_M', mo=True)
+
+    cmds.setAttr ("Add_IKSpline3_M.stretchy", 0)
 
     # arm
     cmds.setAttr ("FKIKArm_M.FKIKBlend", 10)

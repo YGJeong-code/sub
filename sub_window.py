@@ -12,6 +12,7 @@ def openUI():
     cmds.separator()
     cmds.button( label='sub_skin', c=sub_skin_exec )
     cmds.button( label='sub_con', c=sub_con_exec )
+    cmds.button( label='sub_constraint', c=sub_constraint_exec )
     cmds.button( label='sub_rig', c=sub_rig_exec )
     cmds.separator()
     cmds.button( label='subOldHand_skin', c=subOldHand_skin_exec )
@@ -36,6 +37,10 @@ def sub_skin_exec(*args):
 
 def sub_con_exec(*args):
     mel.eval('source "C:/Users/ygjeong/Documents/maya/scripts/sub/sub_control.mel";')
+
+def sub_constraint_exec(*args):
+    import sub.sub_constraint
+    importlib.reload(sub.sub_constraint)
 
 def sub_rig_exec(*args):
     import sub.sub_rig
