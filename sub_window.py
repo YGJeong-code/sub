@@ -8,9 +8,9 @@ def openUI():
 
     win = cmds.window('myWin', title="sub", iconName='Short Name', width=200 )
     cmds.columnLayout( adjustableColumn=True )
-    cmds.button( label='subScale', c=subScale_exec )
-    cmds.separator()
-    cmds.button( label='sub_skin', c=sub_skin_exec )
+    # cmds.button( label='subScale', c=subScale_exec )
+    # cmds.separator()
+    # cmds.button( label='sub_skin', c=sub_skin_exec )
     cmds.button( label='sub_con', c=sub_con_exec )
     cmds.button( label='sub_constraint', c=sub_constraint_exec )
     cmds.button( label='sub_rig', c=sub_rig_exec )

@@ -36,11 +36,15 @@ def monitorA():
 
     cmds.connectAttr('MonitorA_d_con.rz','FKExtraMonitorA6_M.rz', f=True)
 
-    cmds.parentConstraint('Root_M', 'MonitorA_a_nul', mo=True)
+    cmds.connectAttr('MonitorABottom_con.rz','FKExtraMonitorABottom_M.rz', f=True)
+
+    cmds.parentConstraint('Root_M', 'MonitorABottom_nul', mo=True)
+    cmds.parentConstraint('MonitorABottom_M', 'MonitorA_a_nul', mo=True)
     cmds.parentConstraint('MonitorA1_M', 'MonitorA_b_nul', mo=True)
     cmds.parentConstraint('MonitorA3_M', 'MonitorA_c_nul', mo=True)
     cmds.parentConstraint('MonitorA5_M', 'MonitorA_d_nul', mo=True)
 
+    cmds.scaleConstraint('Root_M', 'MonitorABottom_nul', mo=True)
     cmds.scaleConstraint('Root_M', 'MonitorA_a_nul', mo=True)
     cmds.scaleConstraint('Root_M', 'MonitorA_b_nul', mo=True)
     cmds.scaleConstraint('Root_M', 'MonitorA_c_nul', mo=True)
@@ -51,7 +55,7 @@ def monitorA():
     for i in myList:
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    cmds.hide('FKMonitorA_M')
+    cmds.hide('FKMonitorABottom_M')
 
 def createConnect(driver, driven, value):
     myNode = cmds.createNode('multiplyDivide', n=driver+'_mult')
@@ -128,6 +132,22 @@ def center_button():
     for myCon in myConList:
         for i in myList:
             cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    cmds.setAttr ("FKIKSplineA_M.FKIKBlend", 10)
+    cmds.setAttr ("IKSplineA3_M.ikHybridVis", 0)
+    cmds.parentConstraint ( 'FKCenterjoystick17_M', 'IKExtraSplineA3_M', mo=True )
+
+    cmds.setAttr ("FKIKSplineB_M.FKIKBlend", 10)
+    cmds.setAttr ("IKSplineB3_M.ikHybridVis", 0)
+    cmds.parentConstraint ( 'FKCenterjoystick1_M', 'IKExtraSplineB3_M', mo=True )
+
+    myConList = ['IKSplineA3_M','IKSplineB3_M']
+    myList = ['ikCvVis','ikHybridVis']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    cmds.hide('FKIKParentConstraintSplineA_M','FKIKParentConstraintSplineB_M')
 
 def left_button():
     # left button
@@ -315,112 +335,213 @@ def hatch():
 
     cmds.hide('FKHatchCoverClipA_L','FKHatchCoverClipB_L','FKHatchCoverClipC_L')
 
-def pan():
-    # pan
-    myCon = 'FKBody_M'
-    myAttr_speed = 'panSpeed'
+def topmonitor():
+    myConList = ['FKTopmonitor1_M']
+    myList = ['tx','ty','tz','rx','ry','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    cmds.addAttr(myCon, ln=myAttr_speed, at='long', dv=1000)
-    cmds.setAttr(myCon+'.'+myAttr_speed, e=True, keyable=True)
+    myConList = ['FKTopmonitor2_M','FKTopmonitor_M']
+    myList = ['tx','ty','tz','ry','rz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    cmds.expression( s = 'FKExtraFanA1_R.rx = -time*'+myCon+'.'+myAttr_speed )
-    cmds.expression( s = 'FKExtraFanA1_L.rx = -time*'+myCon+'.'+myAttr_speed )
-    cmds.expression( s = 'FKExtraFanB1_R.rx = -time*'+myCon+'.'+myAttr_speed )
-    cmds.expression( s = 'FKExtraFanB1_L.rx = -time*'+myCon+'.'+myAttr_speed )
-    cmds.expression( s = 'FKExtraFanC1_R.rx = -time*'+myCon+'.'+myAttr_speed )
-    cmds.expression( s = 'FKExtraFanC1_L.rx = -time*'+myCon+'.'+myAttr_speed )
-    cmds.expression( s = 'FKExtraEngineH1_R.rx = -time*'+myCon+'.'+myAttr_speed )
-    cmds.expression( s = 'FKExtraEngineH1_L.rx = -time*'+myCon+'.'+myAttr_speed )
+    myConList = ['FKTopmonitor3_M']
+    myList = ['tx','ty','tz','rx','rz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    myCon = 'FKBody_M'
-    myAttr_noiseSpeed = 'panNoiseSpeed'
-    myAttr_offset = 'panNoiseOffset'
-
-    myNoiseSpeed = myCon+'.'+myAttr_noiseSpeed
-    myNoiseOffset = myCon+'.'+myAttr_offset
-
-    cmds.addAttr(myCon, ln=myAttr_noiseSpeed, at='double', dv=10)
-    cmds.setAttr(myNoiseSpeed, e=True, keyable=True)
-    cmds.addAttr(myCon, ln=myAttr_offset, at='double', dv=0.03)
-    cmds.setAttr(myNoiseOffset, e=True, keyable=True)
-
-    mySide = ['R','L']
-    myList = ['A','B','C']
-    for i in mySide:
-        for j in myList:
-            myNode = cmds.createNode('multiplyDivide')
-            cmds.connectAttr ('Fan'+j+'_'+i+'.scale', 'Fan'+j+'1_'+i+'.scale', f=True)
-            cmds.connectAttr ('FKExtraFan'+j+'_'+i+'.scale', myNode+'.input1', f=True)
-            cmds.connectAttr ('FKFan'+j+'_'+i+'.scale', myNode+'.input2', f=True)
-            cmds.connectAttr (myNode+'.outputX', 'Fan'+j+'_'+i+'.scaleX', f=True)
-            cmds.connectAttr (myNode+'.outputY', 'Fan'+j+'_'+i+'.scaleY', f=True)
-            cmds.connectAttr (myNode+'.outputZ', 'Fan'+j+'_'+i+'.scaleZ', f=True)
-            cmds.setAttr ( 'FKExtraFan'+j+'_'+i+'.sx', lock=False, keyable=True, channelBox=True)
-            cmds.setAttr ( 'FKExtraFan'+j+'_'+i+'.sy', lock=False, keyable=True, channelBox=True)
-            cmds.setAttr ( 'FKExtraFan'+j+'_'+i+'.sz', lock=False, keyable=True, channelBox=True)
-            cmds.expression( s = 'FKExtraFan'+j+'_'+i+'.sx = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
-            cmds.expression( s = 'FKExtraFan'+j+'_'+i+'.sy = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
-            cmds.expression( s = 'FKExtraFan'+j+'_'+i+'.sz = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
-
-    mySide = ['R','L']
-    for i in mySide:
-        myNode = cmds.createNode('multiplyDivide')
-        cmds.connectAttr ('EngineH_'+i+'.scale', 'EngineH1_'+i+'.scale', f=True)
-        cmds.connectAttr ('FKExtraEngineH_'+i+'.scale', myNode+'.input1', f=True)
-        cmds.connectAttr ('FKEngineH_'+i+'.scale', myNode+'.input2', f=True)
-        cmds.connectAttr (myNode+'.outputX', 'EngineH_'+i+'.scaleX', f=True)
-        cmds.connectAttr (myNode+'.outputY', 'EngineH_'+i+'.scaleY', f=True)
-        cmds.connectAttr (myNode+'.outputZ', 'EngineH_'+i+'.scaleZ', f=True)
-        cmds.setAttr ( 'FKExtraEngineH_'+i+'.sx', lock=False, keyable=True, channelBox=True)
-        cmds.setAttr ( 'FKExtraEngineH_'+i+'.sy', lock=False, keyable=True, channelBox=True)
-        cmds.setAttr ( 'FKExtraEngineH_'+i+'.sz', lock=False, keyable=True, channelBox=True)
-        cmds.expression( s = 'FKExtraEngineH_'+i+'.sx = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
-        cmds.expression( s = 'FKExtraEngineH_'+i+'.sy = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
-        cmds.expression( s = 'FKExtraEngineH_'+i+'.sz = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
-
-def chair():
-    # chair
-    cmds.setAttr( "IKSplineA3_R.stretchy", 0)
-    cmds.setAttr( "IKSplineA3_L.stretchy", 0)
+    myConList = ['FKTopmonitor4_R','FKTopmonitor4_L']
+    myList = ['tx','ty','tz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
 def midlight():
     # midlight
-    myNode = 'midlight_R_MUL'
-    cmds.createNode('multiplyDivide', n=myNode)
-    cmds.setAttr(myNode+'.input2Z', -1)
+    # myNode = 'midlight_R_MUL'
+    # cmds.createNode('multiplyDivide', n=myNode)
+    # cmds.setAttr(myNode+'.input2Z', -1)
+    #
+    # cmds.connectAttr('MidlightLook_R.ry', 'FKOffsetMidlight_R.rx', f=True)
+    #
+    # cmds.connectAttr('MidlightLook_R.rz', myNode+'.input1Z', f=True)
+    # cmds.connectAttr(myNode+'.outputZ', 'FKOffsetMidlight1_R.rz', f=True)
+    #
+    # myNode = 'midlight_L_MUL'
+    # cmds.createNode('multiplyDivide', n=myNode)
+    # cmds.setAttr(myNode+'.input2Z', -1)
+    #
+    # cmds.connectAttr('MidlightLook_L.ry', 'FKOffsetMidlight_L.rx', f=True)
+    #
+    # cmds.connectAttr('MidlightLook_L.rz', myNode+'.input1Z', f=True)
+    # cmds.connectAttr(myNode+'.outputZ', 'FKOffsetMidlight1_L.rz', f=True)
+    #
+    # cmds.parentConstraint('Root_M','MidlightLook_R_nul', mo=True)
+    # cmds.parentConstraint('Root_M','MidlightLook_L_nul', mo=True)
+    # cmds.scaleConstraint('Root_M','MidlightLook_R_nul', mo=True)
+    # cmds.scaleConstraint('Root_M','MidlightLook_L_nul', mo=True)
 
-    cmds.connectAttr('MidlightLook_R.ry', 'FKOffsetMidlight_R.rx', f=True)
+    myConList = ['FKMidlight_R','FKMidlight_L']
+    myList = ['tx','ty','tz','rx','ry','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    cmds.connectAttr('MidlightLook_R.rz', myNode+'.input1Z', f=True)
-    cmds.connectAttr(myNode+'.outputZ', 'FKOffsetMidlight1_R.rz', f=True)
+    myConList = ['FKMidlight1_R','FKMidlight1_L']
+    myList = ['tx','ty','tz','ry','rz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    myNode = 'midlight_L_MUL'
-    cmds.createNode('multiplyDivide', n=myNode)
-    cmds.setAttr(myNode+'.input2Z', -1)
+def footstool():
+    myConList = ['FKFootstool_L']
+    myList = ['tx','ty','tz','rx','ry','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    cmds.connectAttr('MidlightLook_L.ry', 'FKOffsetMidlight_L.rx', f=True)
-
-    cmds.connectAttr('MidlightLook_L.rz', myNode+'.input1Z', f=True)
-    cmds.connectAttr(myNode+'.outputZ', 'FKOffsetMidlight1_L.rz', f=True)
-
-    cmds.parentConstraint('Root_M','MidlightLook_R_nul', mo=True)
-    cmds.parentConstraint('Root_M','MidlightLook_L_nul', mo=True)
-    cmds.scaleConstraint('Root_M','MidlightLook_R_nul', mo=True)
-    cmds.scaleConstraint('Root_M','MidlightLook_L_nul', mo=True)
+    myConList = ['FKFootstool1_L']
+    myList = ['tx','ty','tz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
 def engine():
-    # Engine
-    myCon = 'FKEngineI_M'
-    cmds.setAttr( myCon+".tx", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".ty", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".tz", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".rx", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".ry", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".rz", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".sx", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".sy", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".sz", lock=True, keyable=False, channelBox=False)
-    cmds.setAttr( myCon+".v", lock=True, keyable=False, channelBox=False)
+    myConList = ['FKEngineH1_L','FKEngineH1_R']
+    myList = ['tx','ty','tz','rx','ry','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKEngineB_L','FKEngineB_R']
+    myList = ['sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    cmds.setAttr ("FKIKSpline_M.FKIKBlend", 10)
+    cmds.setAttr ("IKSpline3_M.ikHybridVis", 0)
+
+    myConList = ['IKSpline3_M']
+    myList = ['ikCvVis','ikHybridVis']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+def fan():
+    # fan
+    # myCon = 'FKExtraRoot_M|Root'
+    myConList = {'FKFanA1_R':'FKExtraFanA1_R.rz','FKFanB1_R':'FKExtraFanB1_R.rz',
+            'FKFanC1_R':'FKExtraFanC1_R.rz','FKEngineH1_R':'FKExtraEngineH1_R.rz',
+            'FKFanA1_L':'FKExtraFanA1_L.rz','FKFanB1_L':'FKExtraFanB1_L.rz',
+            'FKFanC1_L':'FKExtraFanC1_L.rz','FKEngineH1_L':'FKExtraEngineH1_L.rz'}
+    # myConList = {'FKFanA1_R':'FKExtraFanA1_R.rz'}
+    for con in myConList:
+        target = myConList[con]
+        myAttr_speed = 'fanSpeed'
+        cmds.addAttr(con, ln=myAttr_speed, at='long', dv=0)
+        cmds.setAttr('%s.%s' % (con, myAttr_speed), e=True, keyable=True)
+        cmds.expression( s='%s = -time * %s.%s' % (target, con, myAttr_speed) )
+
+    # myAttr_noiseSpeed = 'fanNoiseSpeed'
+    # myAttr_offset = 'fanNoiseOffset'
+    #
+    # myNoiseSpeed = myCon+'.'+myAttr_noiseSpeed
+    # myNoiseOffset = myCon+'.'+myAttr_offset
+    #
+    # cmds.addAttr(myCon, ln=myAttr_noiseSpeed, at='double', dv=10)
+    # cmds.setAttr(myNoiseSpeed, e=True, keyable=True)
+    # cmds.addAttr(myCon, ln=myAttr_offset, at='double', dv=0.03)
+    # cmds.setAttr(myNoiseOffset, e=True, keyable=True)
+    #
+    # mySide = ['R','L']
+    # myList = ['A','B','C']
+    # for i in mySide:
+    #     for j in myList:
+    #         myNode = cmds.createNode('multiplyDivide')
+    #         cmds.connectAttr ('Fan'+j+'_'+i+'.scale', 'Fan'+j+'1_'+i+'.scale', f=True)
+    #         cmds.connectAttr ('FKExtraFan'+j+'_'+i+'.scale', myNode+'.input1', f=True)
+    #         cmds.connectAttr ('FKFan'+j+'_'+i+'.scale', myNode+'.input2', f=True)
+    #         cmds.connectAttr (myNode+'.outputX', 'Fan'+j+'_'+i+'.scaleX', f=True)
+    #         cmds.connectAttr (myNode+'.outputY', 'Fan'+j+'_'+i+'.scaleY', f=True)
+    #         cmds.connectAttr (myNode+'.outputZ', 'Fan'+j+'_'+i+'.scaleZ', f=True)
+    #         cmds.setAttr ( 'FKExtraFan'+j+'_'+i+'.sx', lock=False, keyable=True, channelBox=True)
+    #         cmds.setAttr ( 'FKExtraFan'+j+'_'+i+'.sy', lock=False, keyable=True, channelBox=True)
+    #         cmds.setAttr ( 'FKExtraFan'+j+'_'+i+'.sz', lock=False, keyable=True, channelBox=True)
+    #         cmds.expression( s = 'FKExtraFan'+j+'_'+i+'.sx = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
+    #         cmds.expression( s = 'FKExtraFan'+j+'_'+i+'.sy = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
+    #         cmds.expression( s = 'FKExtraFan'+j+'_'+i+'.sz = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
+    #
+    # mySide = ['R','L']
+    # for i in mySide:
+    #     myNode = cmds.createNode('multiplyDivide')
+    #     cmds.connectAttr ('EngineH_'+i+'.scale', 'EngineH1_'+i+'.scale', f=True)
+    #     cmds.connectAttr ('FKExtraEngineH_'+i+'.scale', myNode+'.input1', f=True)
+    #     cmds.connectAttr ('FKEngineH_'+i+'.scale', myNode+'.input2', f=True)
+    #     cmds.connectAttr (myNode+'.outputX', 'EngineH_'+i+'.scaleX', f=True)
+    #     cmds.connectAttr (myNode+'.outputY', 'EngineH_'+i+'.scaleY', f=True)
+    #     cmds.connectAttr (myNode+'.outputZ', 'EngineH_'+i+'.scaleZ', f=True)
+    #     cmds.setAttr ( 'FKExtraEngineH_'+i+'.sx', lock=False, keyable=True, channelBox=True)
+    #     cmds.setAttr ( 'FKExtraEngineH_'+i+'.sy', lock=False, keyable=True, channelBox=True)
+    #     cmds.setAttr ( 'FKExtraEngineH_'+i+'.sz', lock=False, keyable=True, channelBox=True)
+    #     cmds.expression( s = 'FKExtraEngineH_'+i+'.sx = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
+    #     cmds.expression( s = 'FKExtraEngineH_'+i+'.sy = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
+    #     cmds.expression( s = 'FKExtraEngineH_'+i+'.sz = ((noise(time * %s) +1) * %s) + 1'%(myNoiseSpeed,myNoiseOffset) )
+
+    myConList = ['FKFanA1_L','FKFanA1_R','FKFanB1_L','FKFanB1_R','FKFanC1_L','FKFanC1_R']
+    myList = ['tx','ty','tz','rx','ry','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKFanAPillar_L','FKFanAPillar_R','FKFanBPillar_L','FKFanBPillar_R','FKFanCPillar_L','FKFanCPillar_R']
+    myList = ['tx','ty','tz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+def monitorC():
+    myConList = ['FKMonitorC_R','FKMonitorC1_R','FKMonitorC4_R']
+    myList = ['tx','ty','tz','rx','rz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKMonitorC2_R','FKMonitorC3_R']
+    myList = ['tx','ty','tz','ry','rz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKMonitorC5_R']
+    myList = ['tx','ty','tz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+def chair():
+    myConList = ['FKChair_R','FKChair_L']
+    myList = ['sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKChair1_R','FKChair1_L']
+    myList = ['tx','ty','tz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKChair2_R','FKChair2_R']
+    myList = ['tx','ty','tz','ry','rz','sx','sy','sz','v']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
 
 conName()
 monitorA()
@@ -429,3 +550,9 @@ left_button()
 right_button()
 pedal()
 hatch()
+topmonitor()
+midlight()
+footstool()
+engine()
+fan()
+monitorC()
