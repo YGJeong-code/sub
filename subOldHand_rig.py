@@ -3,7 +3,7 @@ from piston.piston import makePiston
 
 # Arm
 def armSetup():
-    cmds.setAttr ("FKIKArm_R.FKIKBlend", 10)
+    # cmds.setAttr ("FKIKArm_R.FKIKBlend", 10)
     cmds.setAttr ("FKIKArm1_R.FKIKBlend", 10)
     cmds.setAttr ("FKIKArm2_R.FKIKBlend", 10)
     cmds.setAttr ("FKIKArm3_R.FKIKBlend", 10)
@@ -21,6 +21,18 @@ def armSetup():
     cmds.setAttr ("HandPart1_R.twistAmount", 0)
     cmds.setAttr ("HandPart2_R.twistAmount", 0)
     cmds.setAttr ("HandPart3_R.twistAmount", 0)
+
+def hoseSetup():
+    cmds.setAttr ("FKIKSpline_R.FKIKBlend", 10)
+    cmds.setAttr ("IKSpline4_R.ikHybridVis", 0)
+
+    myCon = 'IKSpline4_R'
+    myList = ['ikCvVis','ikHybridVis']
+    for i in myList:
+        cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    cmds.parentConstraint ( 'FKBody1_R', 'IKExtraSpline4_R', mo=True )
+    cmds.parentConstraint ( 'FKAttach1_M', 'IKExtraSpline1_R', mo=True )
 
 # lock & hide
 def lockAndHide():
@@ -45,18 +57,23 @@ def lockAndHide():
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
     myConList = ['IKArm1_R','IKArm2_R']
-    myList = ['tx','rx','ry','rz','sx','sy','sz','stretchy']
+    myList = ['sx','sy','sz','stretchy']
     for myCon in myConList:
         for i in myList:
             cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
     myCon = 'IKArm_R'
-    myList = ['tx','ty','rx','ry','sx','sy','sz','Fatness1']
+    myList = ['sx','sy','sz','Fatness1']
+    for i in myList:
+        cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myCon = 'FKHand1_R'
+    myList = ['tx','ty','rx','ry','sx','sy','sz']
     for i in myList:
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
     myCon = 'IKArm3_R'
-    myList = ['tx','ry','rz','sx','sy','sz','Fatness1','Fatness2']
+    myList = ['sx','sy','sz','Fatness1','Fatness2']
     for i in myList:
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
@@ -95,7 +112,7 @@ def lockAndHide():
     for i in myList:
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    myConList = ['FKSampler3_L','FKCapA_L','FKCapB_L','FKCapC_L','FKCapD_L']
+    myConList = ['FKSampler3_L','FKCapA_L','FKCapB_L','FKCapC_L','FKCapD_L','FKValveA_L','FKValveB_L']
     myList = ['tx','ty','tz','rx','rz','sx','sy','sz']
     for myCon in myConList:
         for i in myList:
@@ -113,8 +130,8 @@ def lockAndHide():
         for i in myList:
             cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    myConList = ['FKHoseA_R','FKHoseA1_R','FKHoseB_R','FKHoseC_R','FKHoseC1_R']
-    myList = ['sx','sy','sz']
+    myConList = ['FKBodyTop_M']
+    myList = ['tx','ty','tz','ry','rz','sx','sy','sz']
     for myCon in myConList:
         for i in myList:
             cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
@@ -141,6 +158,7 @@ def pistonSetup():
     makePiston('Z', 'Y', 'FKpistonB_R', 'FKpistonA_R')
 
 armSetup()
+hoseSetup()
 lockAndHide()
 addAttribute()
 pistonSetup()

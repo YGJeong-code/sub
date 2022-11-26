@@ -1,11 +1,14 @@
 import maya.cmds as cmds
 import maya.mel as mel
 
-# skin
-cmds.select ('subOldHand_geo_Grp')
-cmds.select (hi=True)
-mySel = cmds.ls(sl=True)
-cmds.delete(mySel, constructionHistory = True)
+myGrp = 'subOldHand_geo_Grp'
+myPath = 'C:/woody/202210/rig/subOldHand/skin/'
+
+# delete constraint
+cmds.delete( cmds.listRelatives(myGrp, c=True, ad=True, type='constraint') )
+
+# delete skin
+cmds.delete( cmds.listRelatives(myGrp, c=True, ad=True, type='geometryShape'), constructionHistory=True )
 
 # sampler
 def skinSampler():
@@ -32,6 +35,10 @@ def skinSampler():
             cmds.skinCluster('CapC_L', i,tsb=True)
         elif i == 'subOldHand_samplerA_a_b_a_b_a_c_glassD_geo' or i == 'subOldHand_samplerA_a_b_a_b_b_a_b_b_glassD_geo':
             cmds.skinCluster('CapD_L', i,tsb=True)
+        elif i == 'subOldHand_samplerA_a_b_a_a_b_b_metal_geo':
+            cmds.skinCluster('ValveA_L', i,tsb=True)
+        elif i == 'subOldHand_samplerA_a_b_a_b_b_b_metal_geo':
+            cmds.skinCluster('ValveB_L', i,tsb=True)
         else:
             cmds.skinCluster('Sampler3_L', i,tsb=True)
 
@@ -40,9 +47,10 @@ def skinOldHandA():
     cmds.skinCluster('pistonA_R', 'subOldHand_oldarmA_b_a_metal_geo',tsb=True)
     cmds.skinCluster('Body1_R', 'subOldHand_oldarmA_b_b_metal_geo',tsb=True)
 
-    cmds.skinCluster('Attach1_M','HoseA_R','HoseA1_R','HoseB_R','HoseC_R','HoseC1_R', 'subOldHand_oldarmA_c_rubber_geo',tsb=True)
-    mel.eval('deformerWeights -import -method "index" -deformer "skinCluster32" -path "C:/Users/ygjeong/Desktop/ygjeong/202210/rig/subOldHand/" "hose_skin.xml"; skinCluster -e -forceNormalizeWeights "skinCluster32";')
-
+    # cmds.skinCluster('Attach1_M','HoseA_R','HoseA1_R','HoseB_R','HoseC_R','HoseC1_R', 'subOldHand_oldarmA_c_rubber_geo',tsb=True)
+    # mel.eval('deformerWeights -import -method "index" -deformer "skinCluster32" -path "C:/Users/ygjeong/Desktop/ygjeong/202210/rig/subOldHand/" "hose_skin.xml"; skinCluster -e -forceNormalizeWeights "skinCluster32";')
+    mySkin = cmds.skinCluster('Attach1_M','Hose1_R','Hose2_R','Hose3_R','Hose4_R','Hose5_R','Hose6_R','Hose7_R','Hose8_R','Hose9_R','Hose10_R','Hose11_R','Hose12_R','Hose13_R','Hose14_R','Hose15_R','Hose16_R','Hose17_R','Hose18_R','Hose19_R','Hose20_R', 'subOldHand_oldarmA_c_rubber_geo', tsb=True)
+    # cmds.deformerWeights('hose.xml', im=True, deformer=mySkin, path=myPath)
 
     cmds.skinCluster('Body_M', 'subOldHand_oldarmA_a_b_metal_geo',tsb=True)
     cmds.skinCluster('Body_M', 'subOldHand_oldarmA_a_c_metal_geo',tsb=True)
@@ -52,8 +60,8 @@ def skinOldHandA():
     for i in myMesh:
         cmds.skinCluster('Attach1_M', i,tsb=True)
 
-    cmds.skinCluster('Root_M', 'subOldHand_oldarmA_a_a_b_metal_geo',tsb=True)
-    cmds.skinCluster('Root_M', 'subOldHand_oldarmA_a_a_c_metal_geo',tsb=True)
+    cmds.skinCluster('BodyTop_M', 'subOldHand_oldarmA_a_a_b_metal_geo',tsb=True)
+    cmds.skinCluster('BodyTop_M', 'subOldHand_oldarmA_a_a_c_metal_geo',tsb=True)
     cmds.skinCluster('Root_M', 'subOldHand_oldarmA_a_a_d_metal_geo',tsb=True)
 
 # oldHandB
@@ -144,14 +152,18 @@ def skinAddJnt():
         cmds.select(cl=True)
         myBaseJnt = cmds.joint()
         mySkinJnt = 'add_'+myJnt
-        cmds.rename(myBaseJnt, mySkinJnt)
-        cmds.matchTransform(mySkinJnt,myJnt)
 
-        cmds.pointConstraint(myJnt, mySkinJnt)
-        cmds.scaleConstraint(myJnt, mySkinJnt)
+        if bool( cmds.ls(mySkinJnt) ):
+            cmds.delete( myBaseJnt )
+        else:
+            cmds.rename(myBaseJnt, mySkinJnt)
+            cmds.matchTransform(mySkinJnt, myJnt)
 
-        myParent = cmds.listRelatives(myJnt, p=True)
-        cmds.parent(mySkinJnt, myParent)
+            cmds.pointConstraint(myJnt, mySkinJnt)
+            cmds.scaleConstraint(myJnt, mySkinJnt)
+
+            myParent = cmds.listRelatives(myJnt, p=True)
+            cmds.parent(mySkinJnt, myParent)
 
 skinAddJnt()
 skinSampler()

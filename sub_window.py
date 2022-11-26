@@ -16,6 +16,7 @@ def openUI():
     cmds.button( label='sub_rig', c=sub_rig_exec )
     cmds.separator()
     cmds.button( label='subOldHand_skin', c=subOldHand_skin_exec )
+    # cmds.button( label='subOldHand_constraint', c=subOldHand_constraint_exec )
     cmds.button( label='subOldHand_rig', c=subOldHand_rig_exec )
     cmds.separator()
     cmds.button( label='subNewHand_skin', c=subNewHand_skin_exec )
@@ -49,6 +50,10 @@ def sub_rig_exec(*args):
 def subOldHand_skin_exec(*args):
     import sub.subOldHand_skin
     importlib.reload(sub.subOldHand_skin)
+
+def subOldHand_constraint_exec(*args):
+    import sub.subOldHand_constraint
+    importlib.reload(sub.subOldHand_constraint)
 
 def subOldHand_rig_exec(*args):
     import sub.subOldHand_rig
