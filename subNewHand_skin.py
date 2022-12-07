@@ -2,12 +2,10 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 # skin delete
-cmds.select ('robotHand_geo_Grp')
-cmds.select (hi=True)
-mySel = cmds.ls(sl=True)
-cmds.delete(mySel, constructionHistory = True)
+myGrp = cmds.ls('robotHand_geo_Grp')
+cmds.delete( cmds.listRelatives(myGrp, c=True, ad=True, type='geometryShape'), constructionHistory=True )
 
-myPath = 'C:/Users/ygjeong/Desktop/ygjeong/202210/rig/robotHand/'
+myPath = 'C:/woody/202210/rig/robotHand/skin/'
 
 # robotHand_A_Grp
 def skinAgrp():
@@ -22,18 +20,19 @@ def skinAgrp():
         cmds.skinCluster('Root_M', i,tsb=True)
 
     myMesh = 'robotHand_A_c_a_rubber_geo'
-    mySkin = cmds.skinCluster('Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
+    mySkin = cmds.skinCluster('Rubber8_M','Rubber9_M', myMesh,tsb=True)
+    cmds.deformerWeights('rubberA.xml', im=True, deformer=mySkin, path=myPath)
 
     myMesh = 'robotHand_A_c_b_rubber_geo'
-    mySkin = cmds.skinCluster('Add_Rubber1_M','Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
+    mySkin = cmds.skinCluster('Rubber5_M','Rubber6_M','Rubber7_M','Rubber8_M','Rubber9_M', myMesh,tsb=True)
     cmds.deformerWeights('rubberB.xml', im=True, deformer=mySkin, path=myPath)
 
     myMesh = 'robotHand_A_c_c_rubber_geo'
-    mySkin = cmds.skinCluster('Add_Root_M','Add_Rubber_M','Add_Rubber1_M','Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
+    mySkin = cmds.skinCluster('Root_M','Rubber1_M','Rubber2_M','Rubber3_M','Rubber4_M','Rubber5_M','Rubber6_M','Rubber7_M','Rubber8_M', myMesh,tsb=True)
     cmds.deformerWeights('rubberC.xml', im=True, deformer=mySkin, path=myPath)
 
     myMesh = 'robotHand_A_c_d_metal_geo'
-    mySkin = cmds.skinCluster('Add_Rubber2_M','Add_Rubber3_M', myMesh,tsb=True)
+    mySkin = cmds.skinCluster('Rubber9_M', myMesh,tsb=True)
 
 # robotHand_B_Grp
 def skinBgrp():
@@ -42,7 +41,7 @@ def skinBgrp():
     cmds.deformerWeights('arm00.xml', im=True, deformer=mySkin, path=myPath)
 
     myMesh = 'robotHand_B_a_b_metal_geo'
-    mySkin = cmds.skinCluster('Arm_M','Arm1_M','add_Arm2_M', myMesh,tsb=True)
+    mySkin = cmds.skinCluster('Arm_M','add_Arm2_M', myMesh,tsb=True)
     cmds.deformerWeights('arm01.xml', im=True, deformer=mySkin, path=myPath)
 
     myMesh = 'robotHand_B_b_a_metal_geo'
@@ -50,7 +49,7 @@ def skinBgrp():
     cmds.deformerWeights('arm02.xml', im=True, deformer=mySkin, path=myPath)
 
     myMesh = 'robotHand_B_b_b_metal_geo'
-    mySkin = cmds.skinCluster('Arm3_M','Arm4_M','add_Arm5_M', myMesh,tsb=True)
+    mySkin = cmds.skinCluster('Arm3_M','add_Arm5_M', myMesh,tsb=True)
     cmds.deformerWeights('arm03.xml', im=True, deformer=mySkin, path=myPath)
 
     cmds.skinCluster('add_Arm5_M', 'robotHand_B_b_c_metal_geo', tsb=True)
@@ -60,7 +59,9 @@ def skinCgrp():
     mySkin = cmds.skinCluster('Arm5_M','Suspension1_M', 'robotHand_C_a_b_metal_geo', tsb=True)
     cmds.deformerWeights('suspension.xml', im=True, deformer=mySkin, path=myPath)
 
-    cmds.skinCluster('Suspension1_M', 'robotHand_C_a_c_metal_geo', tsb=True)
+    # cmds.skinCluster('Suspension1_M', 'robotHand_C_a_c_metal_geo', tsb=True)
+    cmds.skinCluster('Suspension1_M', 'robotHand_C_a_c_a_metal_geo', tsb=True)
+    cmds.skinCluster('HandRotate1_M', 'robotHand_C_a_c_b_metal_geo', tsb=True)
 
     cmds.skinCluster('Hand_M', 'robotHand_C_a_d_metal_geo', tsb=True)
     cmds.skinCluster('Hand1_M', 'robotHand_C_a_e_metal_geo', tsb=True)
@@ -137,7 +138,14 @@ def skinAddJnt():
             myParent = cmds.listRelatives(myJnt, p=True)
             cmds.parent(mySkinJnt, myParent)
 
+def skinMethod():
+    for i in cmds.listRelatives(myGrp, c=True, ad=True, type='geometryShape'):
+        if bool( mel.eval('findRelatedSkinCluster '+i) ):
+            mySkin = mel.eval('findRelatedSkinCluster '+i)
+            cmds.setAttr ( mySkin + '.skinningMethod', 1 )
+
 skinAddJnt()
 skinAgrp()
 skinBgrp()
 skinCgrp()
+skinMethod()

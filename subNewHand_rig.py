@@ -2,45 +2,25 @@ import maya.cmds as cmds
 import maya.mel as mel
 from piston.piston import makePiston
 
-# IK
-def ikSetup():
-    # rubber
-    myList = ['.fkVis','.ikVis','.fkIkVis','.aimVis','.aimFKVis','.aimLRVis','.fingerVis','.bendVis','.arrowVis','.drvSysVis','.jointVis']
-    if bool( cmds.objExists('Main') ):
-        cmds.parentConstraint ('Main','Add_Main', mo=True)
-        cmds.scaleConstraint ('Main','Add_Main', mo=True)
+def beamSetup():
+    # limit
+    myConList = ['FKBeamB4_R','FKBeamB4_L','FKBeamA4_M']
+    for i in myConList:
+        cmds.transformLimits ( i, tz=(0, 15.5), etz=(True, True) )
+
+    # controller position
+    myConList = ['FKIKArm6_L']
+    myList = ['tx','ty','tz']
+    for myCon in myConList:
         for i in myList:
-            cmds.connectAttr ( 'Main'+i, 'Add_Main'+i, f=True)
-    else:
-        cmds.parentConstraint ('World','Add_Main', mo=True)
-        cmds.scaleConstraint ('World','Add_Main', mo=True)
+            cmds.setAttr (myCon+'.'+i, lock=False, keyable=True, channelBox=False )
+        cmds.setAttr (myCon+'.tx', 8.196)
+        cmds.setAttr (myCon+'.ty', 13.305)
+        cmds.setAttr (myCon+'.tz', 8.656)
         for i in myList:
-            cmds.connectAttr ( 'World'+i, 'Add_Main'+i, f=True)
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    if bool( cmds.objExists('FKRoot_M') ):
-        cmds.parentConstraint ('FKRoot_M','Add_FKRoot_M', mo=True)
-        cmds.scaleConstraint ('FKRoot_M','Add_FKRoot_M', mo=True)
-    else:
-        cmds.parentConstraint ('FKExtraRoot_M|Root','Add_FKRoot_M', mo=True)
-        cmds.scaleConstraint ('FKExtraRoot_M|Root','Add_FKRoot_M', mo=True)
-
-    cmds.setAttr ("Add_IKSpline3_M.stretchy", 0)
-
-    # arm
-    cmds.setAttr ("FKIKArm_M.FKIKBlend", 10)
-    cmds.setAttr ("IKArm_M.follow", 10)
-
-    cmds.setAttr ("PoleArm_M.translateY", 50)
-    cmds.setAttr ("PoleArm_M.translateZ", -240)
-    cmds.setAttr ("PoleArm_M.follow", 10)
-
-    # suspention
-    cmds.setAttr ("FKIKParentConstraintArm1_M.visibility", 0)
-
-    # hand
-    cmds.setAttr ("FKIKParentConstraintArm7_M.visibility", 0)
-
-    # beam
+    # follow
     cmds.setAttr ("IKArm5_M.follow", 10)
     cmds.setAttr ("PoleArm5_M.follow", 10)
 
@@ -50,20 +30,112 @@ def ikSetup():
     cmds.setAttr ("IKArm6_R.follow", 10)
     cmds.setAttr ("PoleArm6_R.follow", 10)
 
-    # hand
-    cmds.setAttr ("IKArm2_M.follow", 10)
-    cmds.setAttr ("PoleArm2_M.follow", 10)
+    # channel
+    myConList = ['IKArm5_M','IKArm6_L','IKArm6_R']
+    myList = ['sx','sy','sz','stretchy','antiPop','Lenght1','Lenght2','Fatness1','Fatness2']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    cmds.setAttr ("IKArm3_M.follow", 10)
-    cmds.setAttr ("PoleArm3_M.follow", 10)
+    # ik
+    cmds.setAttr ("FKIKArm6_R.FKIKBlend", 10)
+    cmds.setAttr ("FKIKArm6_L.FKIKBlend", 10)
+    cmds.setAttr ("FKIKArm5_M.FKIKBlend", 10)
 
-    cmds.setAttr ("IKArm4_L.follow", 10)
-    cmds.setAttr ("PoleArm4_L.follow", 10)
+def handSetup():
+    # shape
+    cmds.select('FKHandRotate2_MShape.cv[0:7]', r=True)
+    cmds.rotate(0, 90, 0, ocp=True, os=True, fo=True, r=True)
+    cmds.select(cl=True)
 
-    cmds.setAttr ("IKArm4_R.follow", 10)
-    cmds.setAttr ("PoleArm4_R.follow", 10)
+    # add attribute & set driven
+    cmds.addAttr('FKHandRotate2_M', ln="folding",  at='double', min=0, max=1 )
+    cmds.setAttr('FKHandRotate2_M.folding', e=True, keyable=True)
 
-# lock & hide
+    cmds.setDrivenKeyframe( 'FKExtraHand1_M.rx', cd='FKHandRotate2_M.folding' )
+    cmds.setDrivenKeyframe( 'FKExtraHand2_M.rx', cd='FKHandRotate2_M.folding' )
+    cmds.setDrivenKeyframe( 'FKExtraHand3_M.rx', cd='FKHandRotate2_M.folding' )
+
+    cmds.setAttr ("FKHandRotate2_M.folding", 1)
+    cmds.setAttr ("FKExtraHand1_M.rx", 90)
+    cmds.setAttr ("FKExtraHand2_M.rx", -90)
+    cmds.setAttr ("FKExtraHand3_M.rx", 90)
+    cmds.setDrivenKeyframe( 'FKExtraHand1_M.rx', cd='FKHandRotate2_M.folding' )
+    cmds.setDrivenKeyframe( 'FKExtraHand2_M.rx', cd='FKHandRotate2_M.folding' )
+    cmds.setDrivenKeyframe( 'FKExtraHand3_M.rx', cd='FKHandRotate2_M.folding' )
+
+    # channel lockAndHide
+    myConList = ['FKHand_M']
+    for i in myConList:
+        cmds.transformLimits ( i, tz=(0, 7.648), etz=(True, True) )
+
+    myConList = ['FKHandRotate1_M']
+    myList = ['tx','ty','tz','rx','ry','sx','sy','sz']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKHandRotate2_M','FKHand1_M','FKHand2_M','FKHand3_M']
+    myList = ['tx','ty','tz','ry','rz','sx','sy','sz']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKHand_M','FKHand4_M']
+    myList = ['tx','ty','rx','ry','rz','sx','sy','sz']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKHand5_M','FKFingerA_M','FKFingerB_L','FKFingerB_R']
+    myList = ['tx','ty','tz','sx','sy','sz']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    myConList = ['FKFingerA1_M','FKFingerA2_M','FKFingerB1_L','FKFingerB2_L','FKFingerB1_R','FKFingerB2_R']
+    myList = ['tx','ty','tz','ry','rz','sx','sy','sz']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+    # visibility
+    cmds.setAttr ("FKIKParentConstraintArm7_M.v", 0)
+
+def rubberSetup():
+    # channel
+    cmds.setAttr ("FKIKSpline_M.FKIKBlend", 10)
+    cmds.setAttr ("IKSpline3_M.ikHybridVis", 0)
+
+    # rename
+    cmds.rename ( 'IKSpline3_M', 'CordPlug' )
+    cmds.rename ( 'IKSpline2_M', 'Cord_Mid_Bow' )
+    cmds.rename ( 'IKSpline1_M', 'Cord_Low_Bow' )
+
+    # shape
+    cmds.select ( 'Cord_Low_Bow', 'Cord_Mid_Bow', r=True )
+    mel.eval('asSwapCurve;')
+
+    # channel lockAndHide
+    myConList = ['CordPlug']
+    myList = ['ikCvVis','ikHybridVis']
+    for myCon in myConList:
+        for i in myList:
+            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
+
+def ikSetup():
+    # arm
+    cmds.setAttr ("FKIKArm_M.FKIKBlend", 10)
+    cmds.setAttr ("IKArm_M.follow", 10)
+    cmds.setAttr ("IKArm_M.stretchy", 10)
+
+    cmds.setAttr ("PoleArm_M.translateY", 60)
+    cmds.setAttr ("PoleArm_M.translateZ", -150)
+    cmds.setAttr ("PoleArm_M.follow", 10)
+
+    # suspention
+    cmds.setAttr ("FKIKParentConstraintArm1_M.visibility", 0)
+
 def lockAndHide():
     cmds.rename('Main','World')
     cmds.connectAttr('World.sx', 'World.sy', f=True)
@@ -85,17 +157,13 @@ def lockAndHide():
     for i in myList:
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    # myCon = 'PoleArm_M'
-    # myList = ['follow','lock']
-    # for i in myList:
-    #     cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
-
     myCon = 'FKBody_M'
     myList = ['tx','ty','tz','sx','sy','sz']
     for i in myList:
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    myConList = ['FKArm_M','FKArm1_M','FKArm2_M']
+    # myConList = ['FKArm_M','FKArm1_M','FKArm2_M']
+    myConList = ['FKArm_M','FKArm2_M']
     myList = ['tx','ty','tz','ry','rz','sx','sy','sz']
     for myCon in myConList:
         for i in myList:
@@ -124,49 +192,15 @@ def lockAndHide():
         for i in myList:
             cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    myConList = ['FKHand_M','FKHand1_M','FKHand2_M','FKHand3_M']
-    myList = ['tx','ty','tz','ry','rz','sx','sy','sz']
-    for myCon in myConList:
-        for i in myList:
-            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
-
-    myCon = 'FKHand4_M'
-    myList = ['tx','ty','rx','ry','rz','sx','sy','sz']
-    for i in myList:
-        cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
-
-    myConList = ['FKHand5_M','FKFingerA_M','FKFingerB_L','FKFingerB_R']
-    myList = ['tx','ty','tz','sx','sy','sz']
-    for myCon in myConList:
-        for i in myList:
-            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
-
-    myConList = ['FKFingerA1_M','FKFingerA2_M','FKFingerB1_L','FKFingerB2_L','FKFingerB1_R','FKFingerB2_R']
-    myList = ['tx','ty','tz','ry','rz','sx','sy','sz']
-    for myCon in myConList:
-        for i in myList:
-            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
-
     myCon = 'IKArm_M'
     myList = ['sx','sy','sz']
     for i in myList:
         cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
 
-    myConList = ['IKArm5_M','IKArm6_L','IKArm6_R','IKArm3_M','IKArm4_L','IKArm4_R']
-    myList = ['tx','ry','rz','sx','sy','sz','stretchy','antiPop','Lenght1','Lenght2','Fatness1','Fatness2']
-    for myCon in myConList:
-        for i in myList:
-            cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
-
-    myCon = 'IKArm2_M'
-    myList = ['tx','ry','rz','sx','sy','sz','stretchy','antiPop','Lenght1','Lenght2','Lenght3','Fatness1','Fatness2','Fatness3']
-    for i in myList:
-        cmds.setAttr (myCon+'.'+i, lock=True, keyable=False, channelBox=False )
-
     cmds.hide('RootX_M')
-    # cmds.hide('FKFingerUpB_R','FKFingerUpA4_R','FKFingerDownB_R','FKFingerDownA4_R','FKFingerUpA2_R','FKFingerUpA2_R')
-    # cmds.hide('FKFingerUpA2_R','FKFingerDownA2_R')
-    # cmds.hide('FKIKParentConstraintArm_R')
 
+beamSetup()
+handSetup()
+rubberSetup()
 ikSetup()
 lockAndHide()
